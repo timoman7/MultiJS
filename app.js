@@ -9,14 +9,12 @@
 */
 
     var
-        gameport        = 4004,
+        gameport        = 444,
         express         = require('express'),
         UUID            = require('node-uuid'),
 
         verbose         = false,
-        http            = require('http'),
-        app             = express(),
-        server          = http.createServer(app);
+        http            = require('http');
 
 /* Express server set up. */
 
@@ -26,33 +24,10 @@
 //so keep this in mind - this is not a production script but a development teaching tool.
 
         //Tell the server to listen for incoming connections
-    server.listen(gameport)
+    io.connect("/MultiJS:"+gameport);
 
         //Log something so we know that it succeeded.
     console.log('\t :: Express :: Listening on port ' + gameport );
-
-        //By default, we forward the / path to index.html automatically.
-    app.get( '/', function( req, res ){
-        console.log('trying to load %s', __dirname + '/index.html');
-        res.sendfile( '/index.html' , { root:__dirname });
-    });
-
-
-        //This handler will listen for requests on /*, any file from the root of our server.
-        //See expressjs documentation for more info on routing.
-
-    app.get( '/*' , function( req, res, next ) {
-
-            //This is the current file they have requested
-        var file = req.params[0];
-
-            //For debugging, we can track what files are requested.
-        if(verbose) console.log('\t :: Express :: file requested : ' + file);
-
-            //Send the requesting client the file.
-        res.sendfile( __dirname + '/' + file );
-
-    }); //app.get *
 
 
 /* Socket.IO server set up. */
@@ -62,7 +37,7 @@
         
         //Create a socket.io instance using our express server
     var sio = io.listen(server);
-
+//FIX IT
         //Configure the socket.io connection settings.
         //See http://socket.io/
     sio.configure(function (){
@@ -78,7 +53,7 @@
         //Enter the game server code. The game server handles
         //client connections looking for a game, creating games,
         //leaving games, joining games and ending games when they leave.
-    game_server = require('game.server');
+    var game_server = require('game.server');
 
         //Socket.io will call this function when a client connects,
         //So we can send that client looking for a game to play,
